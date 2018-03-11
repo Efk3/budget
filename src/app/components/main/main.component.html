@@ -1,7 +1,0 @@
-<ng-template [ngIf]="dropboxService.user | async" [ngIfElse]="loginBlock">
-  Hi {{ (dropboxService.user | async)?.name.given_name }}!<br><br>
-  <button (click)="logout()">Logout</button>
-</ng-template>
-<ng-template #loginBlock>
-  Please <a (click)="login()">log in</a> to use the app.
-</ng-template>

@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AppLoader } from './app-loader';
-import { MainComponent } from './components/main/main.component';
+import { MainComponent } from './main/main.component';
 
 const routes: Routes = [
   {
@@ -9,7 +9,7 @@ const routes: Routes = [
     canActivate: [AppLoader],
     children: [
       {
-        path: 'asd',
+        path: '',
         component: MainComponent,
       },
     ],
