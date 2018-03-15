@@ -1,0 +1,32 @@
+<input title="File name" type="text" [(ngModel)]="fileName"/>
+<button (click)="createFile()">Create</button>
+
+<hr>
+
+<select title="File" name="file" [(ngModel)]="selectedFile">
+  <option *ngFor="let file of (files | async)" [ngValue]="file">{{ file.name }}</option>
+</select>
+<input title="New name" type="text" [(ngModel)]="newName"/>
+<button (click)="renameFile()">Rename</button>
+
+<hr>
+
+<button (click)="getFiles()">Refresh</button>
+<file-list [status]="filesLoadStatus | async"
+               [files]="files | async"
+               [loadError]="filesLoadError | async"
+               (fileSelected)="getFile($event)"
+               (fileDeleted)="deleteFile($event)">
+</file-list>
+
+<hr>
+
+<ng-template [ngIf]="(fileLoadStatus | async) == 'IN_PROGRESS'">
+  File loading...
+</ng-template>
+<ng-container *ngIf="(loadedFile | async) as file">
+  You selected <strong>{{ file.name }}</strong><br>
+  Content:<br>
+  <textarea title="Content" [(ngModel)]="content" cols="30" rows="10"></textarea><br>
+  <button (click)="save()">Save</button>
+</ng-container>

@@ -1,0 +1,12 @@
+<div *ngIf="status == 'DONE'">
+  <ul>
+    <li *ngFor="let file of files"><a style="cursor: pointer" (click)="fileSelected.emit(file)">{{ file.name }}</a>
+      <button (click)="fileDeleted.emit(file)">X</button>
+    </li>
+  </ul>
+  <ng-template [ngIf]="!files?.length">No file created yet.</ng-template>
+</div>
+<ng-container *ngIf="status == 'IN_PROGRESS'">
+  Loading files...
+</ng-container>
+<ng-container *ngIf="loadError">{{ loadError }}</ng-container>

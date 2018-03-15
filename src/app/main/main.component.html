@@ -1,7 +1,10 @@
 <ng-template [ngIf]="loggedIn | async" [ngIfElse]="loginBlock">
   Hi {{ (user | async)?.name }}!<br><br>
   <button (click)="logout()">Logout</button>
+  <hr>
+  <file-handler></file-handler>
 </ng-template>
+
 <ng-template #loginBlock>
   <ng-template [ngIf]="failure | async">
     The login failed :( {{ failure | async }}<br /><br />
