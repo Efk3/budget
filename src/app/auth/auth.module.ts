@@ -1,7 +1,9 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
+import { EffectsModule } from '@ngrx/effects';
 import { StoreModule } from '@ngrx/store';
 import { reducer } from './reducers/auth.reducer';
 import { DropboxService } from './services/dropbox.service';
+import { GoogleService } from './services/google.service';
 
 @NgModule({})
 export class AuthModule {
@@ -13,7 +15,6 @@ export class AuthModule {
 }
 
 @NgModule({
-  imports: [AuthModule, StoreModule.forFeature('auth', reducer)],
-  providers: [DropboxService],
+  imports: [AuthModule, StoreModule.forFeature('auth', reducer), EffectsModule.forFeature([DropboxService, GoogleService])],
 })
 export class RootAuthModule {}

@@ -10,7 +10,6 @@ import { AppLoader } from './app-loader';
 import { AppRouterModule } from './app-router.model';
 import { AppComponent } from './app.component';
 import { AuthModule } from './auth/auth.module';
-import { DropboxService } from './auth/services/dropbox.service';
 import { FileModule } from './file/file.module';
 import { MainComponent } from './main/main.component';
 
@@ -30,7 +29,12 @@ import { MainComponent } from './main/main.component';
       logOnly: environment.production,
     }),
   ],
-  providers: [AppLoader, DropboxService, { provide: 'dropboxClientId', useValue: environment.dropboxClientId }],
+  providers: [
+    AppLoader,
+    { provide: 'dropboxClientId', useValue: environment.dropboxClientId },
+    { provide: 'googleClientId', useValue: environment.googleClientId },
+    { provide: 'googleApiKey', useValue: environment.googleApiKey },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

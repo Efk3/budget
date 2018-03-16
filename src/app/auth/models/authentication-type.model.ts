@@ -1,3 +1,4 @@
 export enum AuthenticationType {
-  DROPBOX,
+  DROPBOX = 'DROPBOX',
+  GOOGLE = 'GOOGLE',
 }

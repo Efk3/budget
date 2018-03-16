@@ -9,5 +9,6 @@
   <ng-template [ngIf]="failure | async">
     The login failed :( {{ failure | async }}<br /><br />
   </ng-template>
-  Please <a (click)="dropboxLogin()">log in</a> to use the app.
+  <a (click)="googleLogin()">Log in with Google</a><br>
+  <a (click)="dropboxLogin()">Log in with Dropbox</a>
 </ng-template>

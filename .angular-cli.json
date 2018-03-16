@@ -10,7 +10,8 @@
       "assets": [
         "assets",
         "favicon.ico",
-        "dropbox-redirect.html"
+        "redirect-from-dropbox.html",
+        "redirect-from-google.html"
       ],
       "index": "index.html",
       "main": "main.ts",

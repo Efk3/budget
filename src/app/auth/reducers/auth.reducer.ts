@@ -1,14 +1,11 @@
 import { AuthActions, AuthActionTypes } from '../actions/auth';
-import { AUTH_STORAGE_KEY, AuthState, initialState } from './auth.state';
+import { AUTH_STORAGE_KEYS, AuthState, initialState } from './auth.state';
 
 export function reducer(state = initialState, action: AuthActions): AuthState {
   switch (action.type) {
     case AuthActionTypes.LoginSuccess: {
-      if (action.payload.accessToken) {
-        localStorage.setItem(AUTH_STORAGE_KEY, action.payload.accessToken);
-      } else {
-        localStorage.removeItem(AUTH_STORAGE_KEY);
-      }
+      localStorage.setItem(AUTH_STORAGE_KEYS.type, action.payload.type.toString());
+      localStorage.setItem(AUTH_STORAGE_KEYS.accessToken, action.payload.accessToken);
 
       return {
         ...state,
@@ -20,15 +17,17 @@ export function reducer(state = initialState, action: AuthActions): AuthState {
       };
     }
 
-    case AuthActionTypes.LoginFailure: {
+    case AuthActionTypes.LoginFail: {
       return {
         ...state,
         error: action.payload.reason,
       };
     }
 
-    case AuthActionTypes.Logout: {
-      localStorage.removeItem(AUTH_STORAGE_KEY);
+    case AuthActionTypes.LogoutSuccess:
+    case AuthActionTypes.LogoutFail: {
+      localStorage.removeItem(AUTH_STORAGE_KEYS.type);
+      localStorage.removeItem(AUTH_STORAGE_KEYS.accessToken);
 
       return initialState;
     }

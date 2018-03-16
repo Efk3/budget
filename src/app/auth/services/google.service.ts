@@ -1,10 +1,10 @@
+import { HttpClient } from '@angular/common/http';
 import { Inject, Injectable, NgZone } from '@angular/core';
 import { Actions, Effect } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { Dropbox } from 'dropbox';
 import { filter, tap } from 'rxjs/operators';
 import { getSnapshot } from '../../utils/get-snapshot';
-import { AuthActionTypes, Login, LoginFail, LoginSuccess, LogoutFail, LogoutSuccess } from '../actions/auth';
+import { AuthActionTypes, Login, LoginFail, LoginSuccess, LogoutSuccess } from '../actions/auth';
 import { AuthenticationType } from '../models/authentication-type.model';
 import { FailureType } from '../models/failure-type.model';
 import { getAuthenticationInfo } from '../reducers/auth.selector';
@@ -12,38 +12,40 @@ import { AUTH_STORAGE_KEYS, AuthState } from '../reducers/auth.state';
 import { getAccessTokenFromOAuthUrl } from '../utils/oauth';
 
 @Injectable()
-export class DropboxService {
+export class GoogleService {
   @Effect({ dispatch: false })
   private loginEffect = this.actions
     .ofType<Login>(AuthActionTypes.Login)
-    .pipe(filter(action => action.payload.type === AuthenticationType.DROPBOX), tap(() => this.login()));
+    .pipe(filter(action => action.payload.type === AuthenticationType.GOOGLE), tap(() => this.login()));
 
   @Effect({ dispatch: false })
   private logoutEffect = this.actions.ofType(AuthActionTypes.Logout).pipe(tap(() => this.logout()));
 
-  private dropboxClient: Dropbox;
-
   constructor(
-    @Inject('dropboxClientId') private clientId: string,
+    @Inject('googleClientId') private clientId: string,
+    @Inject('googleApiKey') private apiKey: string,
+    private http: HttpClient,
     private store: Store<AuthState>,
     private actions: Actions,
     private ngZone: NgZone
   ) {
-    this.dropboxClient = new Dropbox({ clientId: this.clientId });
-
-    window['dropboxPopUpCallback'] = url => ngZone.run(() => this.popUpCallBack(url));
+    window['drivePopUpCallback'] = url => ngZone.run(() => this.popUpCallBack(url));
 
     const savedAuthType = localStorage.getItem(AUTH_STORAGE_KEYS.type);
     const savedAccessToken = localStorage.getItem(AUTH_STORAGE_KEYS.accessToken);
 
-    if (savedAuthType && AuthenticationType[savedAuthType] === AuthenticationType.DROPBOX && savedAccessToken) {
+    if (savedAuthType && AuthenticationType[savedAuthType] === AuthenticationType.GOOGLE && savedAccessToken) {
       this.checkToken(savedAccessToken, false);
     }
   }
 
-  private login() {
-    const url = document.getElementsByTagName('base')[0].href;
-    window.open(this.dropboxClient.getAuthenticationUrl(`${url}redirect-from-dropbox.html`), null, 'scrollbars=no,width=690,height=420');
+  private async login(): Promise<void> {
+    const baseUrl = document.getElementsByTagName('base')[0].href;
+    const url =
+      `https://accounts.google.com/o/oauth2/v2/auth?scope=` +
+      `https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.profile` +
+      `&redirect_uri=${baseUrl}redirect-from-google.html&response_type=token&client_id=${this.clientId}`;
+    window.open(url, null, 'scrollbars=no,width=690,height=620');
   }
 
   private popUpCallBack(url: Location) {
@@ -56,9 +58,10 @@ export class DropboxService {
 
   private async checkToken(accessToken: string, dispatchFailure: boolean = true): Promise<void> {
     try {
-      const userDropbox = new Dropbox({ accessToken });
-      const user = await userDropbox.usersGetCurrentAccount(null);
-      this.store.dispatch(new LoginSuccess({ user: { name: user.name.given_name }, accessToken, type: AuthenticationType.DROPBOX }));
+      const user = await this.http
+        .get<any>(`https://www.googleapis.com/oauth2/v1/userinfo?alt=json&access_token=${accessToken}`)
+        .toPromise();
+      this.store.dispatch(new LoginSuccess({ user: { name: user.given_name }, accessToken, type: AuthenticationType.GOOGLE }));
     } catch (err) {
       if (dispatchFailure) {
         this.store.dispatch(new LoginFail({ reason: FailureType.INVALID_TOKEN }));
@@ -69,15 +72,11 @@ export class DropboxService {
   private async logout() {
     const authInfo = await getSnapshot(this.store.select(getAuthenticationInfo));
 
-    if (!authInfo || authInfo.type !== AuthenticationType.DROPBOX) {
+    if (!authInfo || authInfo.type !== AuthenticationType.GOOGLE) {
       return;
     }
 
-    try {
-      await new Dropbox({ accessToken: authInfo.accessToken }).authTokenRevoke(null);
-      this.store.dispatch(new LogoutSuccess());
-    } catch (err) {
-      this.store.dispatch(new LogoutFail());
-    }
+    // Google API doesn't allow cross origin request for revoke so we simply drop the token
+    this.store.dispatch(new LogoutSuccess());
   }
 }
