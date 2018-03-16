@@ -2,15 +2,18 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, Effect } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { tap } from 'rxjs/operators';
+import { of } from 'rxjs/observable/of';
+import { switchMap, takeWhile, tap } from 'rxjs/operators';
+import { AuthActionTypes } from '../../auth/actions/auth';
 import { AuthenticationType } from '../../auth/models/authentication-type.model';
 import { getAuthenticationInfo } from '../../auth/reducers/auth.selector';
 import { AuthState } from '../../auth/reducers/auth.state';
-import { CreateFile, FileActionTypes, GetFile, GetFiles, RemoveFile, RenameFile, SaveFile } from '../actions/file.action';
+import { Clear, CreateFile, FileActionTypes, GetFile, RemoveFile, RenameFile, SaveFile } from '../actions/file.action';
 import { BudgetFile } from '../models/budget-file.model';
 import { FileState } from '../reducers/file.state';
 import { DropboxFileHandler } from './dropbox-file-handler';
 import { FileHandler } from './file-handler.interface';
+import { GoogleFileHandler } from './google-file-handler';
 
 @Injectable()
 export class FileService {
@@ -36,7 +39,13 @@ export class FileService {
     .ofType<RenameFile>(FileActionTypes.RenameFile)
     .pipe(tap(action => this.rename(action.payload.file, action.payload.newName)));
 
+  @Effect()
+  private logoutEffect = this.actions
+    .ofType(AuthActionTypes.LogoutSuccess, AuthActionTypes.LogoutFail)
+    .pipe(switchMap(() => of(new Clear())));
+
   private fileHandler: FileHandler;
+  private ready: boolean = false;
 
   constructor(
     private authStore: Store<AuthState>,
@@ -46,10 +55,21 @@ export class FileService {
   ) {
     this.authStore.select(getAuthenticationInfo).subscribe(authenticationInfo => {
       if (authenticationInfo.accessToken) {
-        if (authenticationInfo.type === AuthenticationType.DROPBOX) {
-          this.fileHandler = new DropboxFileHandler(this.http, this.fileStore, authenticationInfo.accessToken);
+        switch (authenticationInfo.type) {
+          case AuthenticationType.DROPBOX:
+            this.fileHandler = new DropboxFileHandler(this.http, this.fileStore, authenticationInfo.accessToken);
+            break;
+          case AuthenticationType.GOOGLE:
+            this.fileHandler = new GoogleFileHandler(this.http, this.fileStore, authenticationInfo.accessToken);
+            break;
         }
-        this.fileStore.dispatch(new GetFiles());
+
+        if (this.fileHandler) {
+          this.fileHandler.ready.pipe(takeWhile(ready => !ready)).subscribe(null, null, () => {
+            this.ready = true;
+            this.fileHandler.list();
+          });
+        }
       } else {
         this.fileHandler = undefined;
       }
@@ -57,7 +77,7 @@ export class FileService {
   }
 
   private list() {
-    if (!this.fileHandler) {
+    if (!this.isFileHandlerReady()) {
       return;
     }
 
@@ -65,7 +85,7 @@ export class FileService {
   }
 
   private get(file: BudgetFile) {
-    if (!this.fileHandler) {
+    if (!this.isFileHandlerReady()) {
       return;
     }
 
@@ -73,7 +93,7 @@ export class FileService {
   }
 
   private create(name: string) {
-    if (!this.fileHandler) {
+    if (!this.isFileHandlerReady()) {
       return;
     }
 
@@ -81,7 +101,7 @@ export class FileService {
   }
 
   private save(file: BudgetFile, newContent: string) {
-    if (!this.fileHandler) {
+    if (!this.isFileHandlerReady()) {
       return;
     }
 
@@ -89,7 +109,7 @@ export class FileService {
   }
 
   private remove(file: BudgetFile) {
-    if (!this.fileHandler) {
+    if (!this.isFileHandlerReady()) {
       return;
     }
 
@@ -97,10 +117,14 @@ export class FileService {
   }
 
   private rename(file: BudgetFile, newName: string) {
-    if (!this.fileHandler) {
+    if (!this.isFileHandlerReady()) {
       return;
     }
 
     this.fileHandler.rename(file, newName);
+  }
+
+  private isFileHandlerReady() {
+    return this.fileHandler && this.ready;
   }
 }

@@ -1,6 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Store } from '@ngrx/store';
 import { Dropbox } from 'dropbox';
+import { Observable } from 'rxjs/Observable';
+import { of } from 'rxjs/observable/of';
 import {
   CreateFileFail,
   CreateFileSuccess,
@@ -21,6 +23,7 @@ import { FileHandler } from './file-handler.interface';
 import FileMetadataReference = DropboxTypes.files.FileMetadataReference;
 
 export class DropboxFileHandler implements FileHandler {
+  public ready: Observable<boolean> = of(true);
   private client: Dropbox;
 
   constructor(private http: HttpClient, private fileStore: Store<FileState>, accessToken: string) {

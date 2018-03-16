@@ -1,6 +1,9 @@
+import { Observable } from 'rxjs/Observable';
 import { BudgetFile } from '../models/budget-file.model';
 
 export interface FileHandler {
+  ready: Observable<boolean>;
+
   list();
 
   get(file: BudgetFile);

@@ -25,6 +25,8 @@ export enum FileActionTypes {
   RemoveFile = '[FILE] Remove File',
   RemoveFileSuccess = '[FILE] Remove File Success',
   RemoveFileFail = '[FILE] Remove File Fail',
+
+  Clear = '[FILE] Clear File Store',
 }
 
 /**
@@ -54,16 +56,19 @@ export class GetFilesSuccess implements Action {
  */
 export class GetFile implements Action {
   public readonly type = FileActionTypes.GetFile;
+
   constructor(public payload: BudgetFile) {}
 }
 
 export class GetFileSuccess implements Action {
   public readonly type = FileActionTypes.GetFileSuccess;
+
   constructor(public payload: { file: BudgetFile; content: string }) {}
 }
 
 export class GetFileFail implements Action {
   public readonly type = FileActionTypes.GetFileFail;
+
   constructor(public payload: string) {}
 }
 
@@ -151,6 +156,13 @@ export class RemoveFileFail implements Action {
   constructor(public payload: BudgetFile) {}
 }
 
+export class Clear implements Action {
+  public readonly type = FileActionTypes.Clear;
+  public payload: any;
+
+  constructor() {}
+}
+
 export type FileActions =
   | GetFiles
   | GetFilesSuccess
@@ -169,4 +181,5 @@ export type FileActions =
   | RenameFileFail
   | RemoveFile
   | RemoveFileSuccess
-  | RemoveFileFail;
+  | RemoveFileFail
+  | Clear;

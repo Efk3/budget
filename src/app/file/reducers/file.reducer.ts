@@ -73,6 +73,10 @@ export function reducer(state = initialState, action: FileActions): FileState {
       );
     }
 
+    case FileActionTypes.Clear: {
+      return initialState;
+    }
+
     default: {
       return state;
     }
