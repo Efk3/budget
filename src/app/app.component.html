@@ -1,1 +1,18 @@
-<router-outlet></router-outlet>
+<mat-sidenav-container>
+  <mat-sidenav-content>
+    <mat-toolbar color="primary">
+      <span>
+        K3 Budget
+      </span>
+      <span class="info" *ngIf="(user | async) as user">
+        <i class="fas fa-user"></i>
+        {{ user.name }}
+        <span class="logout">
+          <a class="pointer" title="Logout" (click)="logout()"><i class="fas fa-sign-out-alt"></i></a>
+        </span>
+      </span>
+    </mat-toolbar>
+
+    <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

@@ -1,14 +1,14 @@
 <ng-template [ngIf]="loggedIn | async" [ngIfElse]="loginBlock">
-  Hi {{ (user | async)?.name }}!<br><br>
-  <button (click)="logout()">Logout</button>
-  <hr>
   <file-handler></file-handler>
 </ng-template>
 
 <ng-template #loginBlock>
-  <ng-template [ngIf]="failure | async">
-    The login failed :( {{ failure | async }}<br /><br />
-  </ng-template>
-  <a (click)="googleLogin()">Log in with Google</a><br>
-  <a (click)="dropboxLogin()">Log in with Dropbox</a>
+  <div class="login">
+    <mat-card>
+      <mat-card-content>
+        <button mat-raised-button color="primary" (click)="googleLogin()">Log in with Google</button>
+        <button mat-raised-button color="primary" (click)="dropboxLogin()">Log in with Dropbox</button>
+      </mat-card-content>
+    </mat-card>
+  </div>
 </ng-template>

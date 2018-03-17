@@ -1,0 +1,26 @@
+:host {
+  display: flex;
+  flex-grow: 1;
+  margin-top: 100px;
+
+  button:first-of-type {
+    margin-bottom: 20px;
+  }
+}
+
+.login {
+  flex: 1 1 auto;
+  max-width: 400px;
+  margin: 0 auto;
+  align-items: stretch;
+}
+
+button {
+  display: block;
+  width: 100%;
+}
+
+:host ::ng-deep .mat-button-wrapper {
+  width: 100%;
+}
+

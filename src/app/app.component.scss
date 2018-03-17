@@ -1,0 +1,41 @@
+.mat-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  box-shadow: 0 3px 5px -1px rgba(0,0,0,.2), 0 6px 10px 0 rgba(0,0,0,.14), 0 1px 18px 0 rgba(0,0,0,.12);
+
+  .title {
+    margin-left: 10px;
+    border-left: 1px solid #fff;
+    padding-left: 10px;
+  }
+
+  a {
+    margin-left: 8px;
+    color: #fff;
+  }
+
+  .info {
+    flex: 1 1 auto;
+    text-align: right;
+  }
+
+  .fa-user {
+    margin-right: 5px;
+  }
+
+  .logout {
+    border-left: 1px solid #fff;
+    margin-left: 10px;
+    padding-left: 10px;
+  }
+}
+
+.content {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-items: stretch;
+  align-content: stretch;
+  padding: 20px;
+}

@@ -1,0 +1,53 @@
+#
+# Configuration file for stylelint
+# Used before every commit to format the style of scss files
+#
+# Description for this rules can be found in their docs:
+# https://github.com/stylelint/stylelint/blob/master/docs/user-guide/rules.md
+#
+
+plugins:
+  - stylelint-scss
+
+rules:
+  color-no-invalid-hex: true
+  block-no-empty: true
+  font-family-no-duplicate-names: true
+  function-calc-no-unspaced-operator: true
+  function-linear-gradient-no-nonstandard-direction: true
+  string-no-newline: true
+  # Disallow unknown units. (Eg: 100pixel is invalid value)
+  unit-no-unknown: true
+  # No unknown property. (Eg: heiht is an unknown property)
+  property-no-unknown: true
+  # Ignored by browsers, so prevents confusion
+  keyframe-declaration-no-important: true
+  # Disallow duplicate properties within declaration blocks.
+  declaration-block-no-duplicate-properties: true
+  # Disallow shorthand properties that override related longhand properties.
+  # Example: a { background-repeat: repeat; background: green; }
+  declaration-block-no-shorthand-property-overrides: true
+  comment-no-empty: true
+  # Rules are specified in the spec, this rule disallow any unknown property
+  # Eample: @unknown (max-width: 960px) {}
+  # Needs to be disabled because cannot work together with SCSS functions
+  # at-rule-no-unknown: true
+  no-extra-semicolons: true
+  no-invalid-double-slash-comments: true
+  shorthand-property-no-redundant-values: true
+  value-no-vendor-prefix: true
+  # We don't allow !important rules
+  declaration-no-important: true
+  # Numbers below zero allowed only without leading zero. (Eg: .5)
+  number-leading-zero: never
+  number-no-trailing-zeros: true
+  string-quotes: single
+  length-zero-no-unit: true
+  unit-case: lower
+  value-keyword-case: lower
+  block-closing-brace-newline-after: always
+  indentation: 2
+  no-eol-whitespace: true
+
+  # scss/max-nesting-depth: 4
+  # scss/dollar-variable-colon-space-after: always
